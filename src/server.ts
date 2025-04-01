@@ -5,7 +5,9 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import { getConfig } from './config/config';
 import { errorHandler } from './middlewares';
-import { example } from './router';
+import authRoute from './router/authRoute';
+import usersRoute from './router/usersRoute';
+import { authMiddleware } from './middlewares/authMiddleware';
 
 dotenv.config();
 
@@ -13,14 +15,24 @@ const app = express();
 const { port, env } = getConfig();
 
 // Middlewares
-app.use(cors());
+
+const allowedOrigins = ['http://localhost:5173'];
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+        allowedHeaders: ['Authorization', 'Content-Type'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        maxAge: 600,
+    })
+);
 app.use(express.json());
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', '*');
-    res.header('Access-Control-Allow-Methods', '*');
-    next();
-});
 
 if (env === 'development') {
     const options = {
@@ -40,7 +52,8 @@ if (env === 'development') {
 }
 
 // Routes
-app.use('/example', example);
+app.use('/auth', authRoute);
+app.use('/users', authMiddleware, usersRoute);
 
 app.use(errorHandler);
 

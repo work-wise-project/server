@@ -1,13 +1,13 @@
 interface ApiErrorParams {
-  message: string;
-  status: number;
+    message: string;
+    status: number;
 }
 
 export class ApiError extends Error {
-  status: number;
+    status: number;
 
-  constructor({ message, status }: ApiErrorParams) {
-    super(message);
-    this.status = status;
-  }
+    constructor({ message, status }: ApiErrorParams) {
+        super(message);
+        this.status = status;
+    }
 }

@@ -1,8 +1,8 @@
-import { config as configDotenv } from "dotenv";
+import { config as configDotenv } from 'dotenv';
 
 type Config = {
-  env: "development" | "production";
-  port: number;
+    env: 'development' | 'production';
+    port: number;
 };
 
 // const REQUIRED_ENVIRONMENT_VARIABLES = [];
@@ -23,17 +23,17 @@ type Config = {
 let config: Config;
 
 export const getConfig = () => {
-  if (!config) {
-    configDotenv();
-    // checkEnvironmentVariables();
+    if (!config) {
+        configDotenv();
+        // checkEnvironmentVariables();
 
-    const { env } = process as { env: Record<string, string> };
+        const { env } = process as { env: Record<string, string> };
 
-    config = {
-      env: env.NODE_ENV === "production" ? env.NODE_ENV : "development",
-      port: Number(env.PORT) || 3000,
-    };
-  }
+        config = {
+            env: env.NODE_ENV === 'production' ? env.NODE_ENV : 'development',
+            port: Number(env.PORT) || 3000,
+        };
+    }
 
-  return config;
+    return config;
 };
