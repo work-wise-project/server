@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import status from 'http-status';
-// import userModel, { IUser } from '../models/usersModel';
+import dataAccessManagerInstance from '../dataAccessManager/usersRoutes';
 
 export interface AuthRequest extends Request {
     currentUser?: any;
@@ -27,13 +27,14 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
             }
 
             req.body.payload = { userId: (payload as JwtPayload)._id };
-            // const user = await userModel.findById(req.body.payload.userId);
-            // if (!user) {
-            //     res.status(status.NOT_FOUND).send('User not found');
-            //     return;
-            // }
 
-            // req.currentUser = user;
+            const user = await dataAccessManagerInstance.getUserById(req.body.payload.userId);
+            if (!user) {
+                res.status(status.NOT_FOUND).send('User not found');
+                return;
+            }
+
+            req.currentUser = user;
 
             next();
         });

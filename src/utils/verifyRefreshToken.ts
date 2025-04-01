@@ -1,5 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { IUserDocument } from '../types/IUserDocument';
+import dataAccessManagerInstance from '../dataAccessManager/usersRoutes';
+import { IUser } from '../types/IUser';
 
 export const verifyRefreshToken = async (refreshToken: string | undefined): Promise<IUserDocument> => {
     if (!refreshToken) {
@@ -18,22 +20,23 @@ export const verifyRefreshToken = async (refreshToken: string | undefined): Prom
             throw new Error('Invalid refresh token');
         }
 
-        // const user = await userModel.findById(userId);
-        // if (!user) {
-        //     throw new Error('User not found');
-        // }
+        const user: IUser = await dataAccessManagerInstance.getUserById(userId);
 
-        // if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
-        //     user.refreshToken = [];
-        //     await user.save();
-        //     throw new Error('Refresh token does not match');
-        // }
+        if (!user) {
+            throw new Error('User not found');
+        }
 
-        // // remove the used refresh token
-        // user.refreshToken = user.refreshToken.filter((token) => token !== refreshToken);
+        if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
+            user.refreshToken = [];
+            await dataAccessManagerInstance.updateUser(user);
+            throw new Error('Refresh token does not match');
+        }
 
-        // await user.save();
-        // return user;
+        // remove the used refresh token
+        user.refreshToken = user.refreshToken.filter((token) => token !== refreshToken);
+
+        await dataAccessManagerInstance.updateUser(user);
+        return user;
     } catch (err) {
         throw new Error(err instanceof Error ? err.message : 'Invalid refresh token');
     }

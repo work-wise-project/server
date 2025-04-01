@@ -1,10 +1,10 @@
-import { ServerException } from '../errors/ServerException';
+import dataAccessManagerInstance from '../dataAccessManager/usersRoutes';
 import { IUserDocument } from '../types/IUserDocument';
 import { generateTokens } from './generateTokens';
 
 export const generateAndSaveUser = async (user: IUserDocument) => {
     try {
-        const tokens = generateTokens(user._id);
+        const tokens = generateTokens(user.id);
 
         if (!tokens) {
             throw new Error('Token secret is not configured');
@@ -16,13 +16,11 @@ export const generateAndSaveUser = async (user: IUserDocument) => {
         }
 
         user.refreshToken.push(tokens.refreshToken);
-        // await user.save();
+
+        await dataAccessManagerInstance.updateUser(user);
 
         return { accessToken, refreshToken, user };
     } catch (error) {
-        if (!error) {
-            throw new ServerException();
-        }
         throw error;
     }
 };

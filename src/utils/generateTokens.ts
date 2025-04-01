@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { ServerException } from '../errors/ServerException';
 import { ITokens } from '../types/ITokens';
 
 export const generateTokens = (userId: string): ITokens | null => {
@@ -27,6 +26,6 @@ export const generateTokens = (userId: string): ITokens | null => {
         );
         return { accessToken, refreshToken };
     } catch (error) {
-        throw new ServerException();
+        throw error;
     }
 };

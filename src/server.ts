@@ -6,6 +6,8 @@ import swaggerUI from 'swagger-ui-express';
 import { getConfig } from './config/config';
 import { errorHandler } from './middlewares';
 import authRoute from './router/authRoute';
+import usersRoute from './router/usersRoute';
+import { authMiddleware } from './middlewares/authMiddleware';
 
 dotenv.config();
 
@@ -51,6 +53,7 @@ if (env === 'development') {
 
 // Routes
 app.use('/auth', authRoute);
+app.use('/users', authMiddleware, usersRoute);
 
 app.use(errorHandler);
 
