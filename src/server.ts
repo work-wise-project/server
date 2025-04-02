@@ -8,6 +8,7 @@ import { errorHandler } from './middlewares';
 import authRoute from './router/authRoute';
 import usersRoute from './router/usersRoute';
 import { authMiddleware } from './middlewares/authMiddleware';
+import { resumeRouter } from './router';
 
 dotenv.config();
 
@@ -54,6 +55,7 @@ if (env === 'development') {
 // Routes
 app.use('/auth', authRoute);
 app.use('/users', authMiddleware, usersRoute);
+app.use('/resume', resumeRouter);
 
 app.use(errorHandler);
 

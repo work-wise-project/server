@@ -1,1 +1,1 @@
-export { example } from './exampleRouter';
+export { resumeRouter } from './resumeRoute';
