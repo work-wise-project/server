@@ -54,11 +54,8 @@ if (env === 'development') {
 // Routes
 app.use('/auth', authRoute);
 app.use('/users', authMiddleware, usersRoute);
-<<<<<<< Updated upstream
 app.use('/resume', resumeRouter);
-=======
 app.use('/skills', skillsRoute);
->>>>>>> Stashed changes
 
 // Middlewares
 app.use(errorHandler);
