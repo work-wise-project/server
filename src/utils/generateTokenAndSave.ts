@@ -1,4 +1,4 @@
-import dataAccessManagerInstance from '../dataAccessManager/usersRoutes';
+import dataAccessManagerInstance from '../dataAccessManager';
 import { IUserDocument } from '../types/IUserDocument';
 import { generateTokens } from './generateTokens';
 

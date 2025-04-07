@@ -7,6 +7,7 @@ import { getConfig } from './config/config';
 import { errorHandler } from './middlewares';
 import authRoute from './router/authRoute';
 import usersRoute from './router/usersRoute';
+import skillsRoute from './router/skillsRoute';
 import { authMiddleware } from './middlewares/authMiddleware';
 import { resumeRouter } from './router';
 
@@ -15,9 +16,7 @@ dotenv.config();
 const app = express();
 const { port, env } = getConfig();
 
-// Middlewares
-
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = [process.env.ALLOWED_ORIGINS];
 app.use(
     cors({
         origin: (origin, callback) => {
@@ -55,8 +54,13 @@ if (env === 'development') {
 // Routes
 app.use('/auth', authRoute);
 app.use('/users', authMiddleware, usersRoute);
+<<<<<<< Updated upstream
 app.use('/resume', resumeRouter);
+=======
+app.use('/skills', skillsRoute);
+>>>>>>> Stashed changes
 
+// Middlewares
 app.use(errorHandler);
 
 app.listen(port, () => {

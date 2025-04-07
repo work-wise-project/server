@@ -1,5 +1,5 @@
 import { IUser } from '../types/IUser';
-import { axiosInstance } from './axiosInstance'; // Import your pre-configured Axios instance
+import { axiosInstance } from './axiosInstance';
 
 const getUserByEmail = async (email: string): Promise<IUser> => {
     try {
@@ -37,4 +37,4 @@ const updateUser = async (userData: IUser): Promise<IUser> => {
     }
 };
 
-export default { getUserByEmail, getUserById, createUser, updateUser };
+export { getUserByEmail, getUserById, createUser, updateUser };

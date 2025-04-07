@@ -1,6 +1,6 @@
 import status from 'http-status';
 import { NextFunction, Request, Response } from 'express';
-import dataAccessManagerInstance from '../dataAccessManager/usersRoutes';
+import dataAccessManagerInstance from '../dataAccessManager';
 
 export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;

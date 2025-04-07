@@ -3,7 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 import status from 'http-status';
 
 import { generateAndSaveUser } from './generateTokenAndSave';
-import dataAccessManagerInstance from '../dataAccessManager/usersRoutes';
+import dataAccessManagerInstance from '../dataAccessManager';
 import { ApiError } from '../errors/ApiError';
 
 const client = new OAuth2Client();
