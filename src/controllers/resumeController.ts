@@ -11,8 +11,6 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
             res.status(400).json({ error: 'No file uploaded' });
             return;
         }
-        console.log(`${base}/uploads/${req.file.filename}`);
-
         res.status(200).json({ filePath: `${base}/uploads/${req.file.filename}` });
     } catch (error) {
         console.error('Error uploading resume:', error);
