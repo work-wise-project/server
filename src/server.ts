@@ -1,14 +1,14 @@
-import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import express from 'express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import { getConfig } from './config/config';
 import { errorHandler } from './middlewares';
+import { authMiddleware } from './middlewares/authMiddleware';
+import { interviewRouter, resumeRouter } from './router';
 import authRoute from './router/authRoute';
 import usersRoute from './router/usersRoute';
-import { authMiddleware } from './middlewares/authMiddleware';
-import { resumeRouter } from './router';
 
 dotenv.config();
 
@@ -57,6 +57,7 @@ app.use('/auth', authRoute);
 app.use('/users', authMiddleware, usersRoute);
 app.use('/resume', resumeRouter);
 app.use('/uploads', express.static('uploads'));
+app.use('/interviews', interviewRouter);
 
 app.use(errorHandler);
 
