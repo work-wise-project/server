@@ -26,14 +26,14 @@ export const verifyRefreshToken = async (refreshToken: string | undefined): Prom
             throw new Error('User not found');
         }
 
-        if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
-            user.refreshToken = [];
+        if (!user.refresh_tokens || !user.refresh_tokens.includes(refreshToken)) {
+            user.refresh_tokens = [];
             await dataAccessManagerInstance.updateUser(user);
             throw new Error('Refresh token does not match');
         }
 
         // remove the used refresh token
-        user.refreshToken = user.refreshToken.filter((token) => token !== refreshToken);
+        user.refresh_tokens = user.refresh_tokens.filter((token) => token !== refreshToken);
 
         await dataAccessManagerInstance.updateUser(user);
         return user;

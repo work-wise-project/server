@@ -11,11 +11,11 @@ export const generateAndSaveUser = async (user: IUserDocument) => {
         }
         const { accessToken, refreshToken } = tokens;
 
-        if (!user.refreshToken) {
-            user.refreshToken = [];
+        if (!user.refresh_tokens) {
+            user.refresh_tokens = [];
         }
 
-        user.refreshToken.push(tokens.refreshToken);
+        user.refresh_tokens.push(tokens.refreshToken);
 
         await dataAccessManagerInstance.updateUser(user);
 
