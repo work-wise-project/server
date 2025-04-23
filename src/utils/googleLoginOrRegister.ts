@@ -36,7 +36,6 @@ export const googleLoginOrRegister = async (req: Request, res: Response, isLogin
                     user = await dataAccessManagerInstance.createUser({
                         email,
                         name: payload?.name || 'unknown',
-                        profileImage: payload?.picture,
                     });
                 }
             }
