@@ -1,15 +1,13 @@
-import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import express from 'express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import { getConfig } from './config/config';
 import { errorHandler } from './middlewares';
-import authRoute from './router/authRoute';
-import usersRoute from './router/usersRoute';
-import skillsRoute from './router/skillsRoute';
+import { authRouter, usersRouter, skillsRouter, resumeRouter, interviewRouter } from './router';
+
 import { authMiddleware } from './middlewares/authMiddleware';
-import { resumeRouter } from './router';
 
 dotenv.config();
 
@@ -52,10 +50,12 @@ if (env === 'development') {
 }
 
 // Routes
-app.use('/auth', authRoute);
-app.use('/users', authMiddleware, usersRoute);
+app.use('/auth', authRouter);
+app.use('/users', authMiddleware, usersRouter);
 app.use('/resume', resumeRouter);
-app.use('/skills', skillsRoute);
+app.use('/skills', skillsRouter);
+app.use('/uploads', express.static('uploads'));
+app.use('/interviews', interviewRouter);
 
 // Middlewares
 app.use(errorHandler);

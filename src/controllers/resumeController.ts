@@ -1,33 +1,65 @@
 import status from 'http-status';
-import fs from 'fs';
+import axios from 'axios';
 import { Request, Response } from 'express';
 import llmServiceInstance from '../llmService/resumeRoutes';
 import { extractTextFromDocx, extractTextFromPDF, extractTextFromTxt } from '../utils/fileExtraction';
 
-export const updloadResumeToLlm = async (req: Request, res: Response) => {
+export const uploadResume = async (req: Request, res: Response): Promise<void> => {
+    const base = process.env.DOMAIN_BASE;
     try {
         if (!req.file) {
-            res.status(status.BAD_REQUEST).json({ error: 'No file uploaded' });
+            res.status(400).json({ error: 'No file uploaded' });
+            return;
+        }
+        res.status(200).json({ filePath: `${base}/uploads/${req.file.filename}` });
+    } catch (error) {
+        console.error('Error uploading resume:', error);
+        res.status(status.INTERNAL_SERVER_ERROR).json({ error: error });
+    }
+};
+
+export const analyzeOrCheckResume = (isAnalyze: boolean) => async (req: Request, res: Response) => {
+    try {
+        const { fileUrl } = req.body;
+
+        if (!fileUrl) {
+            res.status(status.BAD_REQUEST).json({ error: 'No file URL provided' });
             return;
         }
 
-        const filePath = req.file.path;
+        // Download the file from the provided URL
+        const response = await axios({
+            method: 'get',
+            url: fileUrl,
+            responseType: 'arraybuffer',
+        });
+
+        const fileBuffer = response.data;
+
         let textContent: string;
 
-        if (req.file.mimetype === 'application/pdf') {
-            textContent = await extractTextFromPDF(filePath);
-        } else if (req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-            textContent = await extractTextFromDocx(filePath);
-        } else if (req.file.mimetype === 'text/plain') {
-            textContent = await extractTextFromTxt(filePath);
+        const fileExtension = fileUrl.split('.').pop()?.toLowerCase();
+
+        if (fileExtension === 'pdf') {
+            textContent = await extractTextFromPDF(fileBuffer);
+        } else if (fileExtension === 'docx') {
+            textContent = await extractTextFromDocx(fileBuffer);
+        } else if (fileExtension === 'txt') {
+            textContent = await extractTextFromTxt(fileBuffer);
         } else {
             res.status(status.BAD_REQUEST).json({ error: 'Unsupported file format' });
             return;
         }
 
-        fs.unlinkSync(filePath); // Cleanup uploaded file
-        const result = await llmServiceInstance.processResumeText(textContent);
-        res.json(result);
+        if (isAnalyze) {
+            const result = await llmServiceInstance.processAnalyzeResume(textContent);
+            res.json(result);
+            return;
+        } else {
+            const result = await llmServiceInstance.processResumeSpellCheck(textContent);
+            res.json(result);
+            return;
+        }
     } catch (error) {
         console.error('Error processing resume:', error);
         res.status(status.INTERNAL_SERVER_ERROR).json({ error: 'Failed to process resume' });

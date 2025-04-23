@@ -33,10 +33,7 @@ export const googleLoginOrRegister = async (req: Request, res: Response, isLogin
                 if (user) {
                     throw new ApiError({ message: 'Email is already exists', status: status.BAD_REQUEST });
                 } else {
-                    user = await dataAccessManagerInstance.createUser({
-                        email,
-                        name: payload?.name || 'unknown',
-                    });
+                    user = await dataAccessManagerInstance.createUser({ email, name: payload?.name || 'unknown' });
                 }
             }
             return await generateAndSaveUser(user);
