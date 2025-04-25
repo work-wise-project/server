@@ -11,6 +11,7 @@ type Config = {
     allowedOrigins: string;
     dataAccessManagerUrl: string;
     sttServiceUrl: string;
+    llmServiceUrl: string;
 };
 
 const REQUIRED_ENVIRONMENT_VARIABLES = [
@@ -20,6 +21,7 @@ const REQUIRED_ENVIRONMENT_VARIABLES = [
     'ALLOWED_ORIGINS',
     'DATA_ACCESS_MANAGER_URL',
     'STT_SERVICE_URL',
+    'LLM_SERVICE_URL',
 ];
 
 const checkEnvironmentVariables = () => {
@@ -49,6 +51,7 @@ export const getConfig = () => {
             googleClientId: env.GOOGLE_CLIENT_ID,
             dataAccessManagerUrl: env.DATA_ACCESS_MANAGER_URL,
             sttServiceUrl: env.STT_SERVICE_URL,
+            llmServiceUrl: env.LLM_SERVICE_URL,
         };
     }
 
