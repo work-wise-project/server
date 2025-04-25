@@ -9,6 +9,7 @@ import { authMiddleware } from './middlewares/authMiddleware';
 import { interviewRouter, resumeRouter } from './router';
 import authRoute from './router/authRoute';
 import usersRoute from './router/usersRoute';
+import dataManagerProxyRouter from './dataAccessManager/proxyRouter';
 
 dotenv.config();
 
@@ -54,6 +55,7 @@ if (env === 'development') {
 
 // Routes
 app.use('/auth', authRoute);
+app.use('/datamanager/proxy', authMiddleware, dataManagerProxyRouter);
 app.use('/users', authMiddleware, usersRoute);
 app.use('/resume', resumeRouter);
 app.use('/uploads', express.static('uploads'));
