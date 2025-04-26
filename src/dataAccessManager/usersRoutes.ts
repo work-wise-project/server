@@ -37,4 +37,4 @@ const updateUser = async (userData: IUser): Promise<IUser> => {
     }
 };
 
-export default { getUserByEmail, getUserById, createUser, updateUser };
+export { getUserByEmail, getUserById, createUser, updateUser };

@@ -3,15 +3,19 @@ import axios from 'axios';
 import { Request, Response } from 'express';
 import llmServiceInstance from '../llmService/resumeRoutes';
 import { extractTextFromDocx, extractTextFromPDF, extractTextFromTxt } from '../utils/fileExtraction';
+import dataAccessManagerInstance from '../dataAccessManager';
 
 export const uploadResume = async (req: Request, res: Response): Promise<void> => {
-    const base = process.env.DOMAIN_BASE;
+    const { userId } = req.params;
+
     try {
         if (!req.file) {
             res.status(400).json({ error: 'No file uploaded' });
             return;
         }
-        res.status(200).json({ filePath: `${base}/uploads/${req.file.filename}` });
+
+        await dataAccessManagerInstance.uploadResume(req.file, userId);
+        res.status(status.OK).json({ message: 'Resume uploaded successfully' });
     } catch (error) {
         console.error('Error uploading resume:', error);
         res.status(status.INTERNAL_SERVER_ERROR).json({ error: error });
