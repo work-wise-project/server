@@ -1,5 +1,5 @@
 import { IUser } from '../types/IUser';
-import { axiosInstance } from './axiosInstance'; // Import your pre-configured Axios instance
+import { axiosInstance } from './axiosInstance';
 
 const getUserByEmail = async (email: string): Promise<IUser> => {
     try {
