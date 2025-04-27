@@ -55,7 +55,7 @@ if (env === 'development') {
 
 // Routes
 app.use('/auth', authRoute);
-app.use('/datamanager/proxy', dataManagerProxyRouter);
+app.use('/datamanager/proxy', authMiddleware, dataManagerProxyRouter);
 app.use('/users', authMiddleware, usersRoute);
 app.use('/resume', resumeRouter);
 app.use('/uploads', express.static('uploads'));
