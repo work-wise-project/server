@@ -7,48 +7,38 @@ import dataAccessManagerInstance from '../dataAccessManager';
 
 export const uploadResume = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params;
-
     try {
         if (!req.file) {
             res.status(400).json({ error: 'No file uploaded' });
             return;
         }
 
-        await dataAccessManagerInstance.uploadResume(req.file, userId);
-        res.status(status.OK).json({ message: 'Resume uploaded successfully' });
+        const resumePublicUrl = await dataAccessManagerInstance.uploadResume(req.file, userId);
+        res.status(status.OK).json(resumePublicUrl);
     } catch (error) {
         console.error('Error uploading resume:', error);
-        res.status(status.INTERNAL_SERVER_ERROR).json({ error: error });
+        res.status(status.INTERNAL_SERVER_ERROR).json({ error });
     }
 };
 
 export const analyzeOrCheckResume = (isAnalyze: boolean) => async (req: Request, res: Response) => {
     try {
-        const { fileUrl } = req.body;
+        const { userId } = req.params;
 
-        if (!fileUrl) {
-            res.status(status.BAD_REQUEST).json({ error: 'No file URL provided' });
+        if (!userId) {
+            res.status(status.BAD_REQUEST).json({ error: 'No file name provided' });
             return;
         }
 
-        // Download the file from the provided URL
-        const response = await axios({
-            method: 'get',
-            url: fileUrl,
-            responseType: 'arraybuffer',
-        });
-
-        const fileBuffer = response.data;
+        const { fileBuffer, contentType } = await dataAccessManagerInstance.getResume(userId);
 
         let textContent: string;
 
-        const fileExtension = fileUrl.split('.').pop()?.toLowerCase();
-
-        if (fileExtension === 'pdf') {
+        if (contentType === 'application/pdf') {
             textContent = await extractTextFromPDF(fileBuffer);
-        } else if (fileExtension === 'docx') {
+        } else if (contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
             textContent = await extractTextFromDocx(fileBuffer);
-        } else if (fileExtension === 'txt') {
+        } else if (contentType === 'text/plain; charset=utf-8') {
             textContent = await extractTextFromTxt(fileBuffer);
         } else {
             res.status(status.BAD_REQUEST).json({ error: 'Unsupported file format' });

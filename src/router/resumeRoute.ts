@@ -10,7 +10,7 @@ resumeRouter.get('/', async (req, res) => {
     res.status(200).send('Hello World from resume router in server');
 });
 
-resumeRouter.post('/analyze-resume', analyzeOrCheckResume(true));
-resumeRouter.post('/check-grammar', analyzeOrCheckResume(false));
+resumeRouter.post('/analyze-resume/:userId', analyzeOrCheckResume(true));
+resumeRouter.post('/check-grammar/:userId', analyzeOrCheckResume(false));
 
 resumeRouter.post('/:userId', upload.single('resume'), uploadResume);
