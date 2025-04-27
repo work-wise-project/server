@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { analyzeOrCheckResume, uploadResume } from '../controllers/resumeController';
+import { analyzeOrCheckResume, getResumeIfExist, uploadResume } from '../controllers/resumeController';
 
 export const resumeRouter = Router();
 
@@ -14,3 +14,4 @@ resumeRouter.post('/analyze-resume/:userId', analyzeOrCheckResume(true));
 resumeRouter.post('/check-grammar/:userId', analyzeOrCheckResume(false));
 
 resumeRouter.post('/:userId', upload.single('resume'), uploadResume);
+resumeRouter.get('/:userId', getResumeIfExist);
