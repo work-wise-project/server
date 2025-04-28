@@ -4,10 +4,10 @@ import express from 'express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import { getConfig } from './config/config';
+import dataManagerProxyRouter from './dataAccessManager/proxyRouter';
 import { errorHandler } from './middlewares';
-import { authRouter, usersRouter, skillsRouter, resumeRouter, interviewRouter } from './router';
-
 import { authMiddleware } from './middlewares/authMiddleware';
+import { authRouter, interviewRouter, resumeRouter, skillsRouter, usersRouter } from './router';
 
 dotenv.config();
 
@@ -51,6 +51,7 @@ if (env === 'development') {
 
 // Routes
 app.use('/auth', authRouter);
+app.use('/datamanager/proxy', authMiddleware, dataManagerProxyRouter);
 app.use('/users', authMiddleware, usersRouter);
 app.use('/resume', resumeRouter);
 app.use('/skills', skillsRouter);
