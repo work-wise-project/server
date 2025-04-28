@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { IUserDocument } from '../types/IUserDocument';
-import dataAccessManagerInstance from '../dataAccessManager/usersRoutes';
+import dataAccessManagerInstance from '../dataAccessManager';
 import { IUser } from '../types/IUser';
 
 export const verifyRefreshToken = async (refreshToken: string | undefined): Promise<IUserDocument> => {
