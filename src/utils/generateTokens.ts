@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { ITokens } from '../types/ITokens';
+import { getConfig } from '../config/config';
 
 export const generateTokens = (userId: string): ITokens | null => {
     try {
@@ -13,7 +14,7 @@ export const generateTokens = (userId: string): ITokens | null => {
                 random,
             },
             process.env.TOKEN_SECRET,
-            { expiresIn: process.env.TOKEN_EXPIRES }
+            { expiresIn: getConfig().tokenExpires }
         );
 
         const refreshToken = jwt.sign(
@@ -22,7 +23,7 @@ export const generateTokens = (userId: string): ITokens | null => {
                 random,
             },
             process.env.TOKEN_SECRET,
-            { expiresIn: process.env.REFRESH_TOKEN_EXPIRES }
+            { expiresIn: getConfig().refreshTokenExpires }
         );
         return { accessToken, refreshToken };
     } catch (error) {
