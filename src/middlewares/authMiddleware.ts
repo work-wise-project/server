@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import status from 'http-status';
-import dataAccessManagerInstance from '../dataAccessManager/usersRoutes';
+import dataAccessManagerInstance from '../dataAccessManager';
 
 export interface AuthRequest extends Request {
     currentUser?: any;
