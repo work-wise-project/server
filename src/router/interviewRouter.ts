@@ -1,6 +1,7 @@
 import axios, { HttpStatusCode } from 'axios';
 import { Router } from 'express';
 import multer from 'multer';
+import path from 'path';
 import { getConfig } from '../config';
 
 const { sttServiceUrl, llmServiceUrl, dataAccessManagerUrl } = getConfig();
@@ -39,8 +40,10 @@ interviewRouter.post('/analysis/:interviewId', upload.single('file'), async (req
         }
 
         const { buffer, mimetype, fieldname, originalname } = req.file;
+        const filename = `${interviewId}.${path.extname(originalname)}`;
+
         const formData = new FormData();
-        formData.append(fieldname, new Blob([buffer], { type: mimetype }), originalname);
+        formData.append(fieldname, new Blob([buffer], { type: mimetype }), filename);
 
         const { data: transcript } = await axios.post(`${sttServiceUrl}/api/transcript`, formData);
         console.log('finished transcription');
