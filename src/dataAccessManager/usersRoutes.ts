@@ -1,9 +1,9 @@
 import { IUser } from '../types/IUser';
-import { axiosInstance } from './axiosInstance';
+import { dataAccessAxios } from './axiosInstance';
 
 const getUserByEmail = async (email: string): Promise<IUser> => {
     try {
-        const response = await axiosInstance.get(`/users`, { params: { email } });
+        const response = await dataAccessAxios.get(`/users`, { params: { email } });
         return response.data;
     } catch (error) {
         throw new Error('Failed to fetch user from data-access-manager');
@@ -12,7 +12,7 @@ const getUserByEmail = async (email: string): Promise<IUser> => {
 
 const getUserById = async (id: string): Promise<IUser> => {
     try {
-        const response = await axiosInstance.get(`/users`, { params: { id } });
+        const response = await dataAccessAxios.get(`/users`, { params: { id } });
         return response.data;
     } catch (error) {
         throw new Error('Failed to fetch user from data-access-manager');
@@ -21,7 +21,7 @@ const getUserById = async (id: string): Promise<IUser> => {
 
 const createUser = async (userData: IUser) => {
     try {
-        const response = await axiosInstance.post('/users', userData);
+        const response = await dataAccessAxios.post('/users', userData);
         return response.data;
     } catch (error) {
         throw new Error('Failed to create user in data-access-manager');
@@ -30,7 +30,7 @@ const createUser = async (userData: IUser) => {
 
 const updateUser = async (userData: IUser): Promise<IUser> => {
     try {
-        const response = await axiosInstance.put(`/users/${userData.id}`, userData);
+        const response = await dataAccessAxios.put(`/users/${userData.id}`, userData);
         return response.data;
     } catch (error) {
         throw new Error('Failed to update user in data-access-manager');
