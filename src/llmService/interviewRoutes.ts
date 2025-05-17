@@ -1,6 +1,6 @@
 import { llmAxiosInstance } from './axiosInstance';
 
-const generateInterviewPreparation = async (jobLink: string) => {
+const generateInterviewPreparation = async (jobLink: string): Promise<string> => {
     try {
         const res = await llmAxiosInstance.post('/interviews/preparation', { jobLink });
         return res.data;
