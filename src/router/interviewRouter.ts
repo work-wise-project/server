@@ -1,8 +1,9 @@
 import axios, { HttpStatusCode } from 'axios';
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { getConfig } from '../config';
+import { getInterviewPreparation } from '../controllers/interviewController';
 
 const { sttServiceUrl, llmServiceUrl, dataAccessManagerUrl } = getConfig();
 
@@ -66,3 +67,5 @@ interviewRouter.post('/analysis/:interviewId', upload.single('file'), async (req
         res.status(HttpStatusCode.InternalServerError).send({ error: 'Internal Server Error' });
     }
 });
+
+interviewRouter.get('/preparation/:interviewId', getInterviewPreparation);

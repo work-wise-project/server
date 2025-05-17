@@ -1,5 +1,5 @@
 import express from 'express';
-import { axiosInstance } from './axiosInstance';
+import { dataAccessAxios } from './axiosInstance';
 import qs from 'qs';
 
 const proxyRouter = express.Router();
@@ -13,7 +13,7 @@ proxyRouter.use(async (req, res) => {
     const fullUrl = queryString ? `${pathToProxy}?${queryString}` : pathToProxy;
 
     try {
-        const response = await axiosInstance({
+        const response = await dataAccessAxios({
             method: req.method,
             url: fullUrl,
             params: req.params,
