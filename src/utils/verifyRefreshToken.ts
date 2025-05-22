@@ -1,9 +1,8 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { IUserDocument } from '../types/IUserDocument';
 import dataAccessManagerInstance from '../dataAccessManager';
 import { IUser } from '../types/IUser';
 
-export const verifyRefreshToken = async (refreshToken: string | undefined): Promise<IUserDocument> => {
+export const verifyRefreshToken = async (refreshToken: string | undefined): Promise<IUser> => {
     if (!refreshToken) {
         throw new Error('Refresh token is missing');
     }

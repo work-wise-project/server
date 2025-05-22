@@ -19,7 +19,7 @@ const getUserById = async (id: string): Promise<IUser> => {
     }
 };
 
-const createUser = async (userData: IUser) => {
+const createUser = async (userData: Omit<IUser, 'id'>) => {
     try {
         const response = await axiosInstance.post('/users', userData);
         return response.data;
