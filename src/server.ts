@@ -1,6 +1,7 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import { createServer as createHttpsServer } from 'https';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import { getConfig } from './config/config';
@@ -12,7 +13,7 @@ import { authRouter, interviewRouter, resumeRouter, skillsRouter, usersRouter } 
 dotenv.config();
 
 const app = express();
-const { port, env } = getConfig();
+const { port, isProductionEnv, httpsCert, httpsKey } = getConfig();
 
 const allowedOrigins = [process.env.ALLOWED_ORIGINS];
 app.use(
@@ -32,7 +33,7 @@ app.use(
 );
 app.use(express.json());
 
-if (env === 'development') {
+if (!isProductionEnv) {
     const options = {
         definition: {
             openapi: '3.0.0',
@@ -61,6 +62,7 @@ app.use('/interviews', interviewRouter);
 // Middlewares
 app.use(errorHandler);
 
-app.listen(port, () => {
-    console.log(`🚀 Server running on http://localhost:${port}`);
+const serverToRun = isProductionEnv ? createHttpsServer({ key: httpsKey, cert: httpsCert }, app) : app;
+serverToRun.listen(port, () => {
+    console.log(`listening on port ${port} (${isProductionEnv ? 'https' : 'http'})`);
 });
