@@ -1,5 +1,4 @@
 import status from 'http-status';
-import axios from 'axios';
 import { Request, Response } from 'express';
 import llmServiceInstance from '../llmService/resumeRoutes';
 import { extractTextFromDocx, extractTextFromPDF, extractTextFromTxt } from '../utils/fileExtraction';
