@@ -1,9 +1,9 @@
-import status from 'http-status';
-import axios from 'axios';
 import { Request, Response } from 'express';
-import llmServiceInstance from '../llmService/resumeRoutes';
-import { extractTextFromDocx, extractTextFromPDF, extractTextFromTxt } from '../utils/fileExtraction';
+import status from 'http-status';
 import dataAccessManagerInstance from '../dataAccessManager';
+import llmServiceInstance from '../llmService/resumeRoutes';
+import { ResumeContentType } from '../types/ResumeContentType';
+import { extractTextFromDocx, extractTextFromPDF, extractTextFromTxt } from '../utils/fileExtraction';
 
 export const uploadResume = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params;
@@ -21,7 +21,9 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-export const getResumeText = async (userId: string): Promise<string | null> => {
+export const getResumeText = async (
+    userId: string
+): Promise<{ textContent: string; contentType: keyof typeof ResumeContentType | undefined } | null> => {
     if (!userId) {
         throw new Error('No userId provided');
     }
@@ -32,24 +34,31 @@ export const getResumeText = async (userId: string): Promise<string | null> => {
         return null;
     }
 
-    if (contentType === 'application/pdf') {
-        return extractTextFromPDF(fileBuffer);
-    } else if (contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        return extractTextFromDocx(fileBuffer);
-    } else if (contentType === 'text/plain; charset=utf-8') {
-        return extractTextFromTxt(fileBuffer);
-    } else {
+    const extractors: Record<ResumeContentType, (buffer: Buffer) => Promise<string>> = {
+        [ResumeContentType.pdf]: extractTextFromPDF,
+        [ResumeContentType.docx]: extractTextFromDocx,
+        [ResumeContentType.txt]: extractTextFromTxt,
+    };
+
+    const extractor = extractors[contentType];
+    if (!extractor) {
         throw new Error('Unsupported file format');
     }
+
+    const textContent = await extractor(fileBuffer);
+    const shortType = (Object.keys(ResumeContentType) as (keyof typeof ResumeContentType)[]).find(
+        (key) => ResumeContentType[key] === contentType
+    );
+    return { textContent, contentType: shortType };
 };
 
 export const getResumeIfExist = async (req: Request, res: Response): Promise<void> => {
     try {
         const { userId } = req.params;
 
-        const textContent = await getResumeText(userId);
+        const resumeData = await getResumeText(userId);
 
-        res.status(status.OK).send(textContent);
+        res.status(status.OK).send(resumeData);
     } catch (error) {
         console.error('Error getting resume:', error);
         res.status(status.INTERNAL_SERVER_ERROR).json({ error: 'Failed to fetch resume' });
@@ -60,14 +69,14 @@ export const analyzeOrCheckResume = (isAnalyze: boolean) => async (req: Request,
     try {
         const { userId } = req.params;
 
-        const textContent = await getResumeText(userId);
-        if (textContent) {
+        const resumeData = await getResumeText(userId);
+        if (resumeData) {
             if (isAnalyze) {
-                const result = await llmServiceInstance.processAnalyzeResume(textContent);
+                const result = await llmServiceInstance.processAnalyzeResume(resumeData.textContent);
                 res.json(result);
                 return;
             } else {
-                const result = await llmServiceInstance.processResumeSpellCheck(textContent);
+                const result = await llmServiceInstance.processResumeSpellCheck(resumeData.textContent);
                 res.json(result);
                 return;
             }
