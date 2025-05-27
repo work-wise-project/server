@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { getConfig } from '../config';
 
 export const llmAxiosInstance = axios.create({
-    baseURL: 'http://localhost:4002',
+    baseURL: getConfig().llmServiceUrl,
     headers: {
         'Content-Type': 'application/json',
     },

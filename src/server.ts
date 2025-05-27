@@ -57,7 +57,7 @@ app.use('/users', authMiddleware, usersRouter);
 app.use('/resume', resumeRouter);
 app.use('/skills', skillsRouter);
 app.use('/uploads', express.static('uploads'));
-app.use('/interviews', interviewRouter);
+app.use('/interviews', authMiddleware, interviewRouter);
 
 // Middlewares
 app.use(errorHandler);

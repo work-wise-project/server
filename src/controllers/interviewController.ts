@@ -3,8 +3,10 @@ import { HttpStatusCode } from 'axios';
 import dataAccessManagerInstance from '../dataAccessManager';
 import llmServiceInstance from '../llmService/interviewRoutes';
 import { IPreparationResult } from '../types/IPreparation';
+import { getResumeText } from './resumeController';
+import { AuthRequest } from '../middlewares/authMiddleware';
 
-export const getInterviewPreparation = async (req: Request, res: Response): Promise<void> => {
+export const getInterviewPreparation = async (req: AuthRequest, res: Response): Promise<void> => {
     const { interviewId } = req.params;
     if (!interviewId) {
         res.status(HttpStatusCode.BadRequest).send({ error: 'Interview id is required' });
@@ -17,15 +19,20 @@ export const getInterviewPreparation = async (req: Request, res: Response): Prom
     } catch (error: any) {
         if (error.response?.status === HttpStatusCode.NotFound) {
             try {
-                const interview = await dataAccessManagerInstance.getInterviewById(interviewId);
-                const preparationResult = await llmServiceInstance.generateInterviewPreparation(interview.job_link);
+                const [interviewPreparationData, resumeText] = await Promise.all([
+                    dataAccessManagerInstance.getInterviewPreparationData(interviewId),
+                    getResumeText(req.currentUser.id),
+                ]);
+                const preparationResult = await llmServiceInstance.generateInterviewPreparation({
+                    ...interviewPreparationData,
+                    resumeText,
+                });
                 const preparationData: IPreparationResult = {
                     interview_id: interviewId,
                     ...JSON.parse(preparationResult),
                 };
 
                 await dataAccessManagerInstance.saveInterviewPreparation(preparationData);
-                console.log('saved interview preparation to DB');
 
                 res.status(HttpStatusCode.Ok).send(preparationData);
             } catch (innerError) {
