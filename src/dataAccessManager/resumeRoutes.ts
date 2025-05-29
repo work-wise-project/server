@@ -1,6 +1,6 @@
 import FormData from 'form-data';
 import { ResumeContentType } from '../types/ResumeContentType';
-import { axiosInstance } from './axiosInstance';
+import { dataAccessAxios } from './axiosInstance';
 
 const uploadResume = async (file: Express.Multer.File, userId: string): Promise<void> => {
     try {
@@ -10,7 +10,7 @@ const uploadResume = async (file: Express.Multer.File, userId: string): Promise<
 
         formData.append('mimeType', file.mimetype);
 
-        const response = await axiosInstance.post('/resume', formData, {
+        const response = await dataAccessAxios.post('/resume', formData, {
             headers: formData.getHeaders(),
         });
         return response.data;
@@ -24,7 +24,7 @@ const getResume = async (
     userId: string
 ): Promise<{ fileBuffer: Buffer; contentType: ResumeContentType | undefined }> => {
     try {
-        const response = await axiosInstance.get(`/resume/${userId}`, {
+        const response = await dataAccessAxios.get(`/resume/${userId}`, {
             responseType: 'arraybuffer',
         });
 

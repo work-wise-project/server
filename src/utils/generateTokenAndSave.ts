@@ -1,8 +1,8 @@
 import dataAccessManagerInstance from '../dataAccessManager';
-import { IUserDocument } from '../types/IUserDocument';
+import { IUser } from '../types/IUser';
 import { generateTokens } from './generateTokens';
 
-export const generateAndSaveUser = async (user: IUserDocument) => {
+export const generateAndSaveUser = async (user: IUser) => {
     try {
         const tokens = generateTokens(user.id);
 
