@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
 import { HttpStatusCode } from 'axios';
+import { Response } from 'express';
 import dataAccessManagerInstance from '../dataAccessManager';
 import llmServiceInstance from '../llmService/interviewRoutes';
+import { AuthRequest } from '../middlewares/authMiddleware';
 import { IPreparationResult } from '../types/IPreparation';
 import { getResumeText } from './resumeController';
-import { AuthRequest } from '../middlewares/authMiddleware';
 
 export const getInterviewPreparation = async (req: AuthRequest, res: Response): Promise<void> => {
     const { interviewId } = req.params;
@@ -19,13 +19,13 @@ export const getInterviewPreparation = async (req: AuthRequest, res: Response): 
     } catch (error: any) {
         if (error.response?.status === HttpStatusCode.NotFound) {
             try {
-                const [interviewPreparationData, resumeText] = await Promise.all([
+                const [interviewPreparationData, resumeDetails] = await Promise.all([
                     dataAccessManagerInstance.getInterviewPreparationData(interviewId),
                     getResumeText(req.currentUser.id),
                 ]);
                 const preparationResult = await llmServiceInstance.generateInterviewPreparation({
                     ...interviewPreparationData,
-                    resumeText,
+                    resumeText: resumeDetails?.textContent,
                 });
                 const preparationData: IPreparationResult = {
                     interview_id: interviewId,

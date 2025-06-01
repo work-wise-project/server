@@ -26,15 +26,14 @@ export const verifyRefreshToken = async (refreshToken: string | undefined): Prom
         }
 
         if (!user.refresh_tokens || !user.refresh_tokens.includes(refreshToken)) {
-            user.refresh_tokens = [];
-            await dataAccessManagerInstance.updateUser(user);
+            await dataAccessManagerInstance.updateRefreshTokensUser(userId, []);
             throw new Error('Refresh token does not match');
         }
 
         // remove the used refresh token
-        user.refresh_tokens = user.refresh_tokens.filter((token) => token !== refreshToken);
+        const refresh_tokens = user.refresh_tokens.filter((token) => token !== refreshToken);
 
-        await dataAccessManagerInstance.updateUser(user);
+        await dataAccessManagerInstance.updateRefreshTokensUser(userId, refresh_tokens);
         return user;
     } catch (err) {
         throw new Error(err instanceof Error ? err.message : 'Invalid refresh token');

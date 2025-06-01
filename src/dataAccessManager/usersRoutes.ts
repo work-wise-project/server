@@ -37,4 +37,13 @@ const updateUser = async (userData: IUser): Promise<IUser> => {
     }
 };
 
-export { getUserByEmail, getUserById, createUser, updateUser };
+const updateRefreshTokensUser = async (id: string, refreshTokens: string[]): Promise<IUser> => {
+    try {
+        const response = await dataAccessAxios.put(`/users/refreshTokens/${id}`, refreshTokens);
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to update user in data-access-manager');
+    }
+};
+
+export { createUser, getUserByEmail, getUserById, updateRefreshTokensUser, updateUser };

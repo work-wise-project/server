@@ -17,7 +17,7 @@ export const generateAndSaveUser = async (user: IUser) => {
 
         user.refresh_tokens.push(tokens.refreshToken);
 
-        await dataAccessManagerInstance.updateUser(user);
+        await dataAccessManagerInstance.updateRefreshTokensUser(user.id, user.refresh_tokens);
 
         return { accessToken, refreshToken, user };
     } catch (error) {
