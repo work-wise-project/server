@@ -10,12 +10,3 @@ export const getAllSkills = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
-
-export const addSkills = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const user = await dataAccessManagerInstance.addSkills();
-        res.status(status.OK).send(user);
-    } catch (error) {
-        next(error);
-    }
-};
