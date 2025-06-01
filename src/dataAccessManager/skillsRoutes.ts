@@ -10,4 +10,13 @@ const getAllSkills = async (): Promise<Array<ISkill>> => {
     }
 };
 
-export { getAllSkills };
+const addSkills = async (): Promise<Array<ISkill>> => {
+    try {
+        const response = await dataAccessAxios.post('/skills');
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to add skills from data-access-manager');
+    }
+};
+
+export { addSkills, getAllSkills };
