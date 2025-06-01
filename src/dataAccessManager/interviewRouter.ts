@@ -1,10 +1,11 @@
-import { IInterview } from '../types/IInterview';
-import { IPreparationResult } from '../types/IPreparation';
+import { InterviewPreparationData, IPreparationResult } from '../types/IPreparation';
 import { dataAccessAxios } from './axiosInstance';
 
-const getInterviewById = async (interviewId: string): Promise<IInterview> => {
+const getInterviewPreparationData = async (
+    interviewId: string
+): Promise<Omit<InterviewPreparationData, 'resumeText'>> => {
     try {
-        const { data } = await dataAccessAxios.get(`/interviews?id=${interviewId}`);
+        const { data } = await dataAccessAxios.get(`/interviews/preparation-data?id=${interviewId}`);
         return data;
     } catch (error) {
         throw new Error('Failed to fetch interview from data-access-manager');
@@ -32,4 +33,4 @@ const saveInterviewPreparation = async (preparationResult: IPreparationResult) =
     }
 };
 
-export { getInterviewById, getInterviewPreparation, saveInterviewPreparation };
+export { getInterviewPreparationData, getInterviewPreparation, saveInterviewPreparation };

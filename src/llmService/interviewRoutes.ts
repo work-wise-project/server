@@ -1,8 +1,9 @@
+import { InterviewPreparationData } from '../types/IPreparation';
 import { llmAxiosInstance } from './axiosInstance';
 
-const generateInterviewPreparation = async (jobLink: string): Promise<string> => {
+const generateInterviewPreparation = async (interviewPreparationData: InterviewPreparationData): Promise<string> => {
     try {
-        const res = await llmAxiosInstance.post('/interviews/preparation', { jobLink });
+        const res = await llmAxiosInstance.post('/interviews/preparation', interviewPreparationData);
         return res.data;
     } catch (error: any) {
         throw new Error(error.error ?? 'Failed to fetch interview preparation from LLM service');

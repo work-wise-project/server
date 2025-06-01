@@ -1,10 +1,10 @@
-import { getInterviewById, getInterviewPreparation, saveInterviewPreparation } from './interviewRouter';
+import { getInterviewPreparationData, getInterviewPreparation, saveInterviewPreparation } from './interviewRouter';
 import { getResume, uploadResume } from './resumeRoutes';
-import { addSkills, getAllSkills } from './skillsRoutes';
+import { getAllSkills } from './skillsRoutes';
 import { createUser, getUserByEmail, getUserById, updateRefreshTokensUser, updateUser } from './usersRoutes';
 
 export default {
-    getInterviewById,
+    getInterviewPreparationData,
     getInterviewPreparation,
     saveInterviewPreparation,
     getUserByEmail,
