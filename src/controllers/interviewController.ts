@@ -3,8 +3,23 @@ import { Response } from 'express';
 import dataAccessManagerInstance from '../dataAccessManager';
 import llmServiceInstance from '../llmService/interviewRoutes';
 import { AuthRequest } from '../middlewares/authMiddleware';
-import { IPreparationResult } from '../types/IPreparation';
+import { IPreparationResult, MaterialLink } from '../types/IPreparation';
 import { getResumeText } from './resumeController';
+
+const parseMaterialLinks = (materialLinks: string[]): MaterialLink[] =>
+    materialLinks.map((item) => {
+        const match = item.match(/title\s*-\s*(.*?)\.?\s*description\s*-\s*(.*?)\.?\s*link\s*-\s*(.+)/i);
+
+        if (!match) {
+            throw new Error(`Invalid format: ${item}`);
+        }
+
+        return {
+            title: match[1].trim(),
+            description: match[2].trim(),
+            link: match[3].trim(),
+        };
+    });
 
 export const getInterviewPreparation = async (req: AuthRequest, res: Response): Promise<void> => {
     const { interviewId } = req.params;
@@ -14,8 +29,13 @@ export const getInterviewPreparation = async (req: AuthRequest, res: Response): 
     }
 
     try {
-        const response = await dataAccessManagerInstance.getInterviewPreparation(interviewId);
-        res.status(HttpStatusCode.Ok).send(response);
+        const preparationData = await dataAccessManagerInstance.getInterviewPreparation(interviewId);
+        const preparationDataAfterParse = {
+            ...preparationData,
+            material_links: parseMaterialLinks(preparationData.material_links),
+        };
+
+        res.status(HttpStatusCode.Ok).send(preparationDataAfterParse);
     } catch (error: any) {
         if (error.response?.status === HttpStatusCode.NotFound) {
             try {
@@ -34,7 +54,12 @@ export const getInterviewPreparation = async (req: AuthRequest, res: Response): 
 
                 await dataAccessManagerInstance.saveInterviewPreparation(preparationData);
 
-                res.status(HttpStatusCode.Ok).send(preparationData);
+                const preparationDataAfterParse = {
+                    ...preparationData,
+                    material_links: parseMaterialLinks(preparationData.material_links),
+                };
+
+                res.status(HttpStatusCode.Ok).send(preparationDataAfterParse);
             } catch (innerError) {
                 console.error('Error generating preparation:', innerError);
                 res.status(HttpStatusCode.InternalServerError).send({

@@ -14,3 +14,9 @@ export type InterviewPreparationData = {
     pointsToImprove?: string[];
     prevMaterialLinks?: string[];
 };
+
+export type MaterialLink = {
+    title: string;
+    description: string;
+    link: string;
+};
