@@ -1,9 +1,10 @@
 import axios, { HttpStatusCode } from 'axios';
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { getConfig } from '../config';
 import { getInterviewPreparation } from '../controllers/interviewController';
+import { AuthRequest } from '../middlewares/authMiddleware';
 
 const { sttServiceUrl, llmServiceUrl, dataAccessManagerUrl } = getConfig();
 
@@ -28,7 +29,7 @@ interviewRouter.get('/analysis/:interviewId', async (req, res) => {
     }
 });
 
-interviewRouter.post('/analysis/:interviewId', upload.single('file'), async (req, res) => {
+interviewRouter.post('/analysis/:interviewId', upload.single('file'), async (req: AuthRequest, res) => {
     try {
         const { interviewId } = req.params;
         if (!interviewId) {
@@ -48,7 +49,14 @@ interviewRouter.post('/analysis/:interviewId', upload.single('file'), async (req
 
         const { data: transcript } = await axios.post(`${sttServiceUrl}/api/transcript`, formData);
         console.log('finished transcription');
-        const { data: analysis } = await axios.post(`${llmServiceUrl}/interviews/analysis`, transcript);
+
+        const { data: context } = await axios.post(`${dataAccessManagerUrl}/interviews/analysis/context`, {
+            interviewId,
+            userId: req.currentUser.id,
+        });
+        console.log('retrieved interview context');
+
+        const { data: analysis } = await axios.post(`${llmServiceUrl}/interviews/analysis`, { transcript, ...context });
         console.log('finished analysis');
 
         const interviewAnalysis = {
