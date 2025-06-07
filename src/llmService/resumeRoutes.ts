@@ -1,7 +1,7 @@
-import { ResumeAnalysisWithSpellCheck } from '../types/IResumeAnalysisResult';
+import { IResumeAnalysisResult } from '../types/IResumeAnalysisResult';
 import { llmAxiosInstance } from './axiosInstance';
 
-const processAnalyzeResume = async (resumeText: string) => {
+const processAnalyzeResume = async (resumeText: string): Promise<IResumeAnalysisResult> => {
     try {
         const response = await llmAxiosInstance.post('/resume/analyze-resume', { resumeText });
         return response.data;
@@ -10,7 +10,7 @@ const processAnalyzeResume = async (resumeText: string) => {
     }
 };
 
-const processResumeSpellCheck = async (resumeText: string) => {
+const processResumeSpellCheck = async (resumeText: string): Promise<string> => {
     try {
         const response = await llmAxiosInstance.post('/resume/check-grammar', { resumeText });
         return response.data;
