@@ -72,11 +72,32 @@ export const analyzeOrCheckResume = (isAnalyze: boolean) => async (req: Request,
         const resumeData = await getResumeText(userId);
         if (resumeData) {
             if (isAnalyze) {
+                try {
+                    const existingAnalysis = await dataAccessManagerInstance.getResumeAnalysis(userId);
+                    if (existingAnalysis.analysis) {
+                        res.json(existingAnalysis.analysis);
+                        return;
+                    }
+                } catch (error) {
+                    console.log('No existing analysis found, proceeding with new analysis');
+                }
+
                 const result = await llmServiceInstance.processAnalyzeResume(resumeData.textContent);
+                await dataAccessManagerInstance.saveResumeAnalysis(userId, result);
                 res.json(result);
                 return;
             } else {
+                try {
+                    const existingSpellCheck = await dataAccessManagerInstance.getResumeSpellCheck(userId);
+                    if (existingSpellCheck.spell_check) {
+                        res.json(existingSpellCheck.spell_check);
+                        return;
+                    }
+                } catch (error) {
+                    console.log('No existing spell check found, proceeding with new spell check');
+                }
                 const result = await llmServiceInstance.processResumeSpellCheck(resumeData.textContent);
+                await dataAccessManagerInstance.saveResumeSpellCheck(userId, result);
                 res.json(result);
                 return;
             }

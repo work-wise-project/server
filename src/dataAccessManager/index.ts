@@ -1,5 +1,12 @@
 import { getInterviewPreparation, getInterviewPreparationData, saveInterviewPreparation } from './interviewRouter';
-import { getResume, uploadResume } from './resumeRoutes';
+import {
+    getResume,
+    uploadResume,
+    getResumeAnalysis,
+    getResumeSpellCheck,
+    saveResumeAnalysis,
+    saveResumeSpellCheck,
+} from './resumeRoutes';
 import { getAllSkills } from './skillsRoutes';
 import { createUser, getUserByEmail, getUserById, updateRefreshTokensUser, updateUser } from './usersRoutes';
 
@@ -15,4 +22,8 @@ export default {
     uploadResume,
     getResume,
     updateRefreshTokensUser,
+    getResumeAnalysis,
+    getResumeSpellCheck,
+    saveResumeAnalysis,
+    saveResumeSpellCheck,
 };
