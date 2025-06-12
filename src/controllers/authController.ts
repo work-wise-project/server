@@ -1,11 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import status from 'http-status';
 import { generateAndSaveUser } from '../utils/generateTokenAndSave';
-import {
-    googleLogin,
-    googleRegister,
-    verifyGoogleCredentialAndCheckIfUserExists,
-} from '../utils/googleLoginOrRegister';
+import { ensureGoogleEmailNotRegistered, googleLogin, googleRegister } from '../utils/googleLoginOrRegister';
 import { verifyRefreshToken } from '../utils/verifyRefreshToken';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
@@ -66,7 +62,7 @@ export const getAndVerifyGoogleCredential = async (req: Request, res: Response, 
             res.status(status.BAD_REQUEST).send('Missing credential');
             return;
         }
-        const payload = await verifyGoogleCredentialAndCheckIfUserExists(credential);
+        const payload = await ensureGoogleEmailNotRegistered(credential);
         res.status(status.OK).send(payload);
     } catch (error) {
         next(error);
