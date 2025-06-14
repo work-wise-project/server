@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import status from 'http-status';
-import { googleLoginOrRegister } from '../utils/googleLoginOrRegister';
-import { verifyRefreshToken } from '../utils/verifyRefreshToken';
 import { generateAndSaveUser } from '../utils/generateTokenAndSave';
+import { ensureGoogleEmailNotRegistered, googleLogin, googleRegister } from '../utils/googleLoginOrRegister';
+import { verifyRefreshToken } from '../utils/verifyRefreshToken';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userWithTokens = await googleLoginOrRegister(req, res);
+        const userWithTokens = await googleRegister(req, res);
 
         res.status(status.OK).send(userWithTokens);
     } catch (error) {
@@ -21,7 +21,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             return;
         }
 
-        const userWithTokens = await googleLoginOrRegister(req, res, true);
+        const userWithTokens = await googleLogin(req, res);
 
         res.status(status.OK).send(userWithTokens);
     } catch (error) {
@@ -50,6 +50,20 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
         const userWithTokens = await generateAndSaveUser(user);
 
         res.status(status.OK).send(userWithTokens);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getAndVerifyGoogleCredential = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const credential = req.body?.credential;
+        if (!credential) {
+            res.status(status.BAD_REQUEST).send('Missing credential');
+            return;
+        }
+        const payload = await ensureGoogleEmailNotRegistered(credential);
+        res.status(status.OK).send(payload);
     } catch (error) {
         next(error);
     }
